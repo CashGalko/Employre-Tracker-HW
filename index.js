@@ -1,6 +1,7 @@
 const logic = require('./logic');
 const inquirer = require("inquirer");
 
+
 // The starting inquirer prompt that calls all needed functions to run. 
 const employee = () => {
     inquirer
@@ -36,11 +37,22 @@ const employee = () => {
     });
 };
 
+const viewRoles = () => {
+    logic.fetchRole (res => {
+        if (!res.length) {
+            console.log('No roles currently stored in the database.');
+        } else {
+            console.table(res);
+        }
+        employee();
+    });
+}
+
+// Closes the program & connection to the db
 const finish = () => {
     console.log('Thank you for using the Employee Tracker System.');
     process.exit();
 }
-
 
 // begins the initial program.
 employee();
