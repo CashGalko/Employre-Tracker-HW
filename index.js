@@ -175,7 +175,7 @@ const deleteEmploy = () => {
             choices: employee.map(e => e.id + ": " + e.first_name + " " + e.last_name)
         })
         .then (response => {
-            id = response.name.slice(0, response.name.indexOf(":"));
+            id = response.employeeName.slice(0, response.employeeName.indexOf(":"));
             logic.deleteEmploy(id, () => {
                 viewEmploy();
 
