@@ -19,19 +19,19 @@ const employee = () => {
             
             case "View Roles": viewRoles();
             break;
-            case "View Departments": viewDepartments();
+            case "View Departments": viewDepart();
             break;
-            case "View Employees": viewEmployees();
-            break;
-            case "Add Role": addRole();
+            case "View Employees": viewEmploy();
             break;
             case "Add Department": addDepartment();
+            break;
+            case "Add Role": addRole();
             break;
             case "Add Employee": addEmpolyee();
             break;
             case "Delete Employee": deleteEmployee();
             break;
-            case "Exit": finish();
+            case "Exit": exit();
             break;
         }
     });
@@ -48,8 +48,61 @@ const viewRoles = () => {
     });
 }
 
+const viewDepart = () => {
+    logic.fetchDepart (res => {
+        if (!res.length) {
+            console.log('No departments currently stored in the database.');
+        } else {
+            console.table(res);
+        }
+        employee();
+    });
+}
+
+const viewEmploy = () => {
+    logic.fetchEmploy (res => {
+        if (!res.length) {
+            console.log('No employees currently stored in the database.');
+        } else {
+            console.table(res);
+        }
+        employee();
+    });
+}
+
+const addRole = () => {
+    logic.fetchDepart(res => {
+        if (!res.length) {
+            console.log("A department is needed before a role can be created. Please try again.")
+            return employee()
+        }
+        inquirer
+        .prompt (
+            [{
+                message: "Please enter the title of the new role.",
+                name: "title"
+            },
+            {
+                message: "Please enter a salary for the new role.",
+                name: "salary"
+            }, {
+                message: "Which department is this role to be stored under?",
+                name: "department",
+                type: "list",
+                choices: res.map(depart => depart.id + ": " + depart.name)
+            }
+        ])
+        .then (response => {
+            
+            response.department_id = response.department.slice(0, response.department.indexOf(":"));
+            logic.addRole(response, () => {
+                viewRoles ();
+            });
+        });
+    });
+
 // Closes the program & connection to the db
-const finish = () => {
+const exit = () => {
     console.log('Thank you for using the Employee Tracker System.');
     process.exit();
 }
