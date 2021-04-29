@@ -23,13 +23,13 @@ const employee = () => {
             break;
             case "View Employees": viewEmploy();
             break;
-            case "Add Department": addDepartment();
+            case "Add Department": addDepart();
             break;
             case "Add Role": addRole();
             break;
-            case "Add Employee": addEmpolyee();
+            case "Add Employee": addEmpoly();
             break;
-            case "Delete Employee": deleteEmployee();
+            case "Delete Employee": deleteEmploy();
             break;
             case "Exit": exit();
             break;
@@ -79,10 +79,12 @@ const addRole = () => {
         inquirer
         .prompt (
             [{
+                type: 'input',
                 message: "Please enter the title of the new role.",
                 name: "title"
             },
             {
+                type: 'input',
                 message: "Please enter a salary for the new role.",
                 name: "salary"
             }, {
@@ -100,6 +102,87 @@ const addRole = () => {
             });
         });
     });
+}
+
+const addDepart = () => {
+    inquirer
+        .prompt({
+            type: 'input',
+            message: "Name of the New Department?",
+            name: "newDepart"
+    })
+    .then (response => {
+        logic.addDepart(response, () => {
+            viewDepart();
+        });
+    });
+};
+
+const addEmpoly = () => {
+    logic.fetchRole(role => {
+        if (!role.length) {
+            console.log("Please create a role first");
+            return employee();
+        }
+        logic.fetchEmploy(employee => {
+            inquirer
+            .prompt([{
+                type: 'input',
+                message: "Please enter the employee's first name.",
+                name: "firstName"
+            },
+            {
+                type: 'input',
+                message: "Please enter the employee's last name",
+                name: "lastName"
+            },
+            {
+                message: "Choose the manager who is supervising this employee.",
+                name: "manager",
+                type: "list",
+                choices: employee.map(e => e.id + ": " + e.first_name + " " + e.last_name).concat(["null"])
+            },
+            {
+                message: "Which role is this employee entering in?",
+                name: "role",
+                type: "list",
+                choices: role.map(r => r.id + ": " + r.title)
+            }
+            ])
+            .then (response => {
+                response.role_id = response.role.slice(0, response.role.indexOf(":"));
+                if (response.manager === "null") {
+                    response.manager_id = 0
+                }
+                else {
+                    response.manager_id = response.manager.slice(0, response.manager.indexOf(":"))
+                }
+                logic.addEmpoly (response, () => {
+                    viewEmploy();
+                });
+            });
+        });
+    });
+};
+
+const deleteEmploy = () => {
+    logic.fetchEmploy(employee => {
+        inquirer
+        .prompt({
+            message: "Which employe has left the company?",
+            name: "employeeName",
+            type: "list",
+            choices: employee.map(e => e.id + ": " + e.first_name + " " + e.last_name)
+        })
+        .then (response => {
+            id = response.name.slice(0, response.name.indexOf(":"));
+            logic.deleteEmploy(id, () => {
+                viewEmploy();
+
+            });
+        });
+    });   
+};
 
 // Closes the program & connection to the db
 const exit = () => {

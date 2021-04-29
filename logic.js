@@ -28,6 +28,27 @@ const addRole = (data, res) => {
     });
 };
 
+const addDepart = (data, res) => {
+    connection.query(`Insert INTO department (name) values ("${data.newDepart}")`, (err, result) => {
+        if (err) throw err;
+        res(result);
+    });
+};
+
+const addEmpoly = (data, res) => {
+    connection.query(`Insert Into employee (first_name, last_name, role_id, manager_id) values ("${data.firstName}", "${data.lastName}", "${data.role_id}", "${data.manager_id}")`, (err, result) => {
+        if (err) throw err;
+        res(result);
+    });
+};
+
+const deleteEmploy = (id, res) => {
+    connection.query(`DELETE FROM employee WHERE id="${id}"`, (err, result) => {
+        if (err) throw err;
+        res(result);
+    });
+}
+
 module.exports = {
-    fetchRole, fetchDepart, fetchEmploy, addRole
+    fetchRole, fetchDepart, fetchEmploy, addRole, addDepart, addEmpoly, deleteEmploy
 };
